@@ -69,22 +69,36 @@ OBJS = $(SRC:%.c=$(BUILD)%.o)
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -I include
 
+COUNTER = 0
+TOTAL = $(words $(SRC))
+
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	ar rcs $(NAME) $(OBJS)
+	@ar rcs $(NAME) $(OBJS)
 	@echo "\nArchived $(NAME)"
 
-$(BUILD)%.o: %.c
-	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(BUILD)%.o: %.c 
+	@mkdir -p ${@D}
+	$(eval COUNTER := $(shell echo $$(($(COUNTER)+1))))
+	@printf "${GREEN}libft ${MAGENTA}[${COUNTER}/${TOTAL}]${RESET}\r"
+	@${CC} ${CFLAGS} -c $< -o $@
  
 clean:
-	rm -rf $(OBJS) $(BUILD)
+	@rm -rf $(OBJS) $(BUILD)
   
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
   
 re: fclean all
   
 .PHONY: clean fclean re all
+
+# ==================== COLORS ==================== #
+
+GREEN = \033[1;32m
+CYAN = \033[1;36m
+YELLOW = \033[1;33m
+MAGENTA = \033[1;35m
+RED = \033[1;31m
+RESET = \033[0m
